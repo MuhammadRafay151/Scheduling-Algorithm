@@ -10,7 +10,8 @@ namespace ShedulingAlgo
     {
         public string ProcessId { get; set; }
         public int ArrivalTime { get; set; }
-        public int Bustime { get; set; }
+        public int Burstime { get; set; }
         public int TurnAroundTime { get; set; }
+        public bool IsProcessed { get; set; }
     }
 }

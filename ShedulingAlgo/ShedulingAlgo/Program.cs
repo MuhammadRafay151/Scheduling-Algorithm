@@ -15,36 +15,34 @@ namespace ShedulingAlgo
             {
                 ProcessId = "p1",
                 ArrivalTime = 0,
-                Bustime = 4
+                Burstime = 4
 
             };
             processes[1] = new Process()
             {
                 ProcessId = "p2",
                 ArrivalTime = 0,
-                Bustime = 1
+                Burstime = 1
 
             };
             processes[2] = new Process()
             {
                 ProcessId = "p3",
                 ArrivalTime = 2,
-                Bustime = 5
+                Burstime = 5
 
             };
             processes[3] = new Process()
             {
                 ProcessId = "p4",
                 ArrivalTime = 2,
-                Bustime = 3
+                Burstime = 3
 
             };
 
-            SortProcess(processes);
-            Console.WriteLine("===Sorted Process===");
             foreach (Process x in processes)
             {
-                Console.WriteLine("Process Id={0} Arrival Time={1} Bustime={2}", x.ProcessId, x.ArrivalTime, x.Bustime);
+                Console.WriteLine("Process Id={0} Arrival Time={1} Bustime={2}", x.ProcessId, x.ArrivalTime, x.Burstime);
             }
 
             Console.WriteLine("================================");
@@ -61,19 +59,51 @@ namespace ShedulingAlgo
 
         static void StartProcessing(Process[] processes)
         {
+            int CurrentTime = 0;
+            Process pro = null;
             for (int i = 0; i < processes.Length; i++)
             {
+
                 if (i == 0)
                 {
-                    processes[i].TurnAroundTime = processes[i].Bustime;
-                    Console.Write("{0}-[{1}]-{2}", processes[i].ArrivalTime, processes[i].ProcessId, processes[i].Bustime);
+                    pro = GetProcess(processes, CurrentTime);
+                    pro.TurnAroundTime = CurrentTime + pro.Burstime;
+                    CurrentTime = pro.TurnAroundTime;
+                    Console.Write("{0}-[{1}]-{2}", pro.ArrivalTime, pro.ProcessId, pro.Burstime);
                 }
                 else
                 {
-                    processes[i].TurnAroundTime = processes[i - 1].TurnAroundTime + processes[i].Bustime;
-                    Console.Write("-[{0}]-{1}", processes[i].ProcessId, processes[i].TurnAroundTime);
+                    pro = GetProcess(processes, CurrentTime);
+                    pro.TurnAroundTime = CurrentTime + pro.Burstime;
+                    CurrentTime = pro.TurnAroundTime;
+                    Console.Write("-[{0}]-{1}", pro.ProcessId, pro.TurnAroundTime);
+                    pro = null;
                 }
             }
+        }
+        public static Process GetProcess(Process[] processes, int CurrentTime)
+        {
+            Process pro = null;
+            foreach (Process x in processes)
+            {
+                if (pro == null)
+                {
+                    if (x.IsProcessed == false && x.ArrivalTime <= CurrentTime)
+                    {
+                        pro = x;
+                    }
+                }
+                else
+                {
+                    if (x.IsProcessed == false && x.ArrivalTime <= CurrentTime && pro.Burstime > x.Burstime)
+                    {
+                        pro = x;
+                    }
+                }
+
+            }
+            pro.IsProcessed = true;
+            return pro;
         }
         static double AverageWaitingTime(Process[] process)
         {
@@ -93,55 +123,6 @@ namespace ShedulingAlgo
             }
             return (double)AverageTime / process.Length;
         }
-        static void SortProcess(Process[] processes)
-        {
-            int start = 0;
-            int end = 0;
-            bool IsSameArrival = false;
-            for (int i = 0; i < processes.Length; i++)
-            {
-                if (i + 1 < processes.Length && processes[i].ArrivalTime == processes[i + 1].ArrivalTime)
-                {
-                    if (IsSameArrival == false)
-                    {
-                        start = i;
-                        IsSameArrival = true;
-                    }
-
-
-                }
-                else if (IsSameArrival)
-                {
-                    end = i;
-                    InsertionSort(processes, start, end);
-                    end = 0;
-                    start = 0;
-                    IsSameArrival = false;
-                }
-                if (i == processes.Length && IsSameArrival)
-                {
-                    end = i;
-                    InsertionSort(processes, start, end);
-                    end = 0;
-                    start = 0;
-                    IsSameArrival = false;
-                }
-            }
-        }
-        static void InsertionSort(Process[] arr, int start, int End)
-        {
-            for (int i = start + 1; i <= End; i++)
-            {
-                Process temp = arr[i];
-                int j = i;
-                while (j > start && arr[j - 1].Bustime > temp.Bustime)
-                {
-                    arr[j] = arr[j - 1];
-                    j -= 1;
-                }
-                arr[j] = temp;
-            }
-
-        }
+     
     }
 }
