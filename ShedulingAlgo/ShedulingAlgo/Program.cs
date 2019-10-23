@@ -8,34 +8,37 @@ namespace ShedulingAlgo
 {
     class Program
     {
+     
         static void Main(string[] args)
         {
+            Queue<Process> ProQue = new Queue<Process>();
             Process[] processes = new Process[4];
+         
             processes[0] = new Process()
             {
-                ProcessId = "p1",
+                ProcessId = "p0",
                 ArrivalTime = 0,
                 Burstime = 4
 
             };
             processes[1] = new Process()
             {
-                ProcessId = "p2",
+                ProcessId = "p1",
                 ArrivalTime = 0,
                 Burstime = 1
 
             };
             processes[2] = new Process()
             {
-                ProcessId = "p3",
-                ArrivalTime = 2,
+                ProcessId = "p2",
+                ArrivalTime = 0,
                 Burstime = 5
 
             };
             processes[3] = new Process()
             {
-                ProcessId = "p4",
-                ArrivalTime = 2,
+                ProcessId = "p3",
+                ArrivalTime = 0,
                 Burstime = 3
 
             };
@@ -46,18 +49,18 @@ namespace ShedulingAlgo
             }
 
             Console.WriteLine("================================");
-            StartProcessing(processes);
+            StartProcessing(processes,ProQue);
             Console.WriteLine();
             Console.WriteLine("===Avg Waiting Time===");
-            Console.WriteLine(AverageWaitingTime(processes));
+            Console.WriteLine(AverageWaitingTime(ProQue.ToArray()));
             Console.WriteLine("===Avg TurnAround Time===");
-            Console.WriteLine(AverageTurnAroundTime(processes));
+            Console.WriteLine(AverageTurnAroundTime(ProQue.ToArray()));
 
 
 
         }
 
-        static void StartProcessing(Process[] processes)
+        static void StartProcessing(Process[] processes,Queue<Process>ProQue)
         {
             int CurrentTime = 0;
             Process pro = null;
@@ -69,6 +72,7 @@ namespace ShedulingAlgo
                     pro = GetProcess(processes, CurrentTime);
                     pro.TurnAroundTime = CurrentTime + pro.Burstime;
                     CurrentTime = pro.TurnAroundTime;
+                    ProQue.Enqueue(pro);
                     Console.Write("{0}-[{1}]-{2}", pro.ArrivalTime, pro.ProcessId, pro.Burstime);
                 }
                 else
@@ -76,8 +80,11 @@ namespace ShedulingAlgo
                     pro = GetProcess(processes, CurrentTime);
                     pro.TurnAroundTime = CurrentTime + pro.Burstime;
                     CurrentTime = pro.TurnAroundTime;
+                    ProQue.Enqueue(pro);
                     Console.Write("-[{0}]-{1}", pro.ProcessId, pro.TurnAroundTime);
+                    
                     pro = null;
+                    
                 }
             }
         }
@@ -110,6 +117,7 @@ namespace ShedulingAlgo
             int AverageTime = 0;
             for (int i = 1; i < process.Length; i++)
             {
+               
                 AverageTime += process[i - 1].TurnAroundTime;
             }
             return (double)AverageTime / process.Length;
