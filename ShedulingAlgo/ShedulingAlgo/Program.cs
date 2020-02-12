@@ -89,7 +89,7 @@ namespace ShedulingAlgo
             }
         }
         public static Process GetProcess(Process[] processes, int CurrentTime)
-        {
+        {//fetch shorstest job from Processes...
             Process pro = null;
             foreach (Process x in processes)
             {
